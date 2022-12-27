@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A6 add/delete People</title>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: white;
+        margin: 0 auto;
+        width: 600px;
+        border: 3px solid blue;
+        padding: 0 2em 1em;
+      }
+
+      h1 {
+        color: blue;
+      }
+
+      div {
+        margin-bottom: 1em;
+      }
+
+      label {
+        display: inline-block;
+        width: 8em;
+      }
+
+      input {
+        margin-left: 1em;
+      }
+
+      textarea {
+        width: 400px;
+        height: 200px;
+      }
+      #input {
+        border: 3px solid blue;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <h1>A6 INFO2431</h1>
+      <div>
+        <textarea id="show" disabled> </textarea>
+      </div>
+      <div id="input">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" />
+        <br />
+        <label for="age">Age:</label>
+        <input type="number" name="age" id="age" />
+        <br />
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" />
+        <br />
+        <input type="button" value="Add" id="add" />
+      </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script>
+      "use strict";
+
+      const domain = "http://localhost:3000";
+
+      const displayPeople = async () => {
+        const response = await fetch(`${domain}/people`);
+        const people = await response.json();
+
+        let temp = "";
+        for (let person of people) {
+          temp += `${person.name} - ${person.age} - ${person.email} - ${person.id}\n`;
+        }
+        $("#show").val(temp);
+      };
+
+      $(document).ready(async () => {
+        let demo = {
+          name: "Demo Dolly",
+          age: 33,
+          email: "dd@dd.dd",
+        };
+
+        //sample post request
+        // await fetch(`${domain}/people`, {
+        //   method: "POST",
+        //   body: JSON.stringify(demo), //turns the object to JSON
+        //   headers: {
+        //     "Content-type": "application/json; charset=UTF-8",
+        //   },
+        // })
+        //   .then((response) => response.json())
+        //   .then((json) => console.log(json));
+
+        await displayPeople();
+      });
+      $("#add").click(async() => {
+        let newPerson = {
+            name: $("#name").val(),
+            age: parseInt($("#age").val()),
+            email: $("#email").val(),
+        };
+        await fetch(`${domain}/people`, {
+          method: "POST",
+          body: JSON.stringify(newPerson), //turns the object to JSON
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        })
+          .then((response) => response.json())
+          .then((json) => console.log(json));
+          displayPeople();
+      });
+    </script>
+  </body>
+</html>
